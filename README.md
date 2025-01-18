@@ -11,7 +11,7 @@ The plug-in is designed to automatically save the association between the LoRA m
 
 ## Usage 使用教程
 - LoRA Trigger Local节点
-![](./assets/LoRA Trigger Local.png)
+![](./assets/LoRA_Trigger_Local.png)
 
 ## Acknowledgments 致谢
 Thanks to the LoadLoraWithTags plugin author, I learned some of its code logic when developing this plugin.
