@@ -10,6 +10,8 @@ The plug-in is designed to automatically save the association between the LoRA m
 2. git clone https://github.com/Bellzs/ComfyUI-LoRA-Assistant.git 克隆此仓库
 
 ## Usage 使用教程
+- LoRA Trigger Local节点
+https://github.com/Bellzs/ComfyUI-LoRA-Assistant/blob/main/assets/LoRA%20Trigger%20Local.png
 
 ## Acknowledgments 致谢
 Thanks to the LoadLoraWithTags plugin author, I learned some of its code logic when developing this plugin.
