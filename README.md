@@ -22,6 +22,10 @@ The plug-in is designed to automatically save the association between the LoRA m
 - The positive prompt other than the trigger word, if it is not empty, is automatically concated with the trigger word to form the final text output.
 - 除触发词外的正面提示词，若它不为空，则将自动与触发词拼接成最后的文本输出内容。
 
+## Todo 后续开发计划
+- [ ] Automatically sync LoRA information from LibLib. 自动从LibLib中同步LoRA信息。
+- [x] Save the trigger word set by the user, and realize the automatic reading of the trigger word when using LoRA in the future. 保存用户设置的触发词，以后使用LoRA时实现自动读取触发词。
+
 ## Acknowledgments 致谢
 Thanks to the LoadLoraWithTags plugin author, I learned some of its code logic when developing this plugin.
 感谢LoadLoraWithTags插件作者，我在开发本插件时借鉴了它的部分代码逻辑：
