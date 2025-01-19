@@ -128,7 +128,7 @@ class LoRATriggerLocal:
             },
             "optional":{
                 "trigger_word": ("STRING", {
-                    "multiline": True, 
+                    "multiline": False, 
                     "tooltip":"Manually set the trigger word. If it is empty, the last saved trigger word is automatically loaded",
                     #"default": "Hello World!",
                     # "lazy": True
