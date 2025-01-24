@@ -5,6 +5,10 @@ The plug-in is designed to automatically save the association between the LoRA m
 
 该插件旨在自动将LoRA模型和触发词之间的关联关系保存到本地JSON文件中，以便在加载LoRA模型时，可以通过节点“LoRA Trigger Local”自动加载关联的触发词，无需手动输入。
 
+It can now preview the images associated with LoRA as well.
+
+它现在也可以预览LoRA关联的图像了。
+
 ## Installation 安装
 ### Install by ComfyUI Manager（Recommend） 通过ComfyUI管理器安装(推荐)
 ![](./assets/install_by_manager.png)
@@ -12,8 +16,8 @@ The plug-in is designed to automatically save the association between the LoRA m
 1. Go to comfyUI custom_nodes folder, `ComfyUI/custom_nodes/` 打开Comfyui插件目录
 2. git clone https://github.com/Bellzs/ComfyUI-LoRA-Assistant.git 克隆此仓库
 ### To preview the Lora-related images, please install the required Custom Node.预览LoRA图像的必要插件
-- （Optional）If you want to preview LoRA-related images, please install the plugin [ComfyUI_Custom_Nodes_AlekPet](https://github.com/AlekPet/ComfyUI_Custom_Nodes_AlekPet).
-- 如果你希望能预览LoRA相关的图像，请安装插件[ComfyUI_Custom_Nodes_AlekPet](https://github.com/AlekPet/ComfyUI_Custom_Nodes_AlekPet)
+- （Optional）If you want to preview LoRA-related images, please install the required plugin [ComfyUI_Custom_Nodes_AlekPet](https://github.com/AlekPet/ComfyUI_Custom_Nodes_AlekPet).
+- 如果你希望能预览LoRA相关的图像，请安装必要的插件[ComfyUI_Custom_Nodes_AlekPet](https://github.com/AlekPet/ComfyUI_Custom_Nodes_AlekPet)
 
 ## Usage 使用教程
 ### LoRA Trigger Local节点
