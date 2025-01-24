@@ -1,3 +1,4 @@
+import os
 import folder_paths
 from comfy.sd import load_lora_for_models
 from comfy.utils import load_torch_file
@@ -36,95 +37,27 @@ def save_dict_to_File(data_dict):
         print(f"LoRA Assistant==>>Error saving JSON to file: {e}")
 
 class LoRATriggerLocal:
-    """
-    A example node
-
-    Class methods
-    -------------
-    INPUT_TYPES (dict):
-        Tell the main program input parameters of nodes.
-    IS_CHANGED:
-        optional method to control when the node is re executed.
-
-    Attributes
-    ----------
-    RETURN_TYPES (`tuple`):
-        The type of each element in the output tuple.
-    RETURN_NAMES (`tuple`):
-        Optional: The name of each output in the output tuple.
-    FUNCTION (`str`):
-        The name of the entry-point method. For example, if `FUNCTION = "execute"` then it will run Example().execute()
-    OUTPUT_NODE ([`bool`]):
-        If this node is an output node that outputs a result/image from the graph. The SaveImage node is an example.
-        The backend iterates on these output nodes and tries to execute all their parents if their parent graph is properly connected.
-        Assumed to be False if not present.
-    CATEGORY (`str`):
-        The category the node should appear in the UI.
-    DEPRECATED (`bool`):
-        Indicates whether the node is deprecated. Deprecated nodes are hidden by default in the UI, but remain
-        functional in existing workflows that use them.
-    EXPERIMENTAL (`bool`):
-        Indicates whether the node is experimental. Experimental nodes are marked as such in the UI and may be subject to
-        significant changes or removal in future versions. Use with caution in production workflows.
-    execute(s) -> tuple || None:
-        The entry point method. The name of this method must be the same as the value of property `FUNCTION`.
-        For example, if `FUNCTION = "execute"` then this method's name must be `execute`, if `FUNCTION = "foo"` then it must be `foo`.
-    """
     def __init__(self):
         self.loaded_lora = None
 
     @classmethod
     def INPUT_TYPES(s):
-        """
-            Return a dictionary which contains config for all input fields.
-            Some types (string): "MODEL", "VAE", "CLIP", "CONDITIONING", "LATENT", "IMAGE", "INT", "STRING", "FLOAT".
-            Input types "INT", "STRING" or "FLOAT" are special values for fields on the node.
-            The type can be a list for selection.
-
-            Returns: `dict`:
-                - Key input_fields_group (`string`): Can be either required, hidden or optional. A node class must have property `required`
-                - Value input_fields (`dict`): Contains input fields config:
-                    * Key field_name (`string`): Name of a entry-point method's argument
-                    * Value field_config (`tuple`):
-                        + First value is a string indicate the type of field or a list for selection.
-                        + Second value is a config for type "INT", "STRING" or "FLOAT".
-        """
+        # input_dir = folder_paths.get_input_directory()
         LORA_LIST = sorted(folder_paths.get_filename_list("loras"), key=str.lower)
+        LORA_IMG_LIST = []
+        for lora_name in LORA_LIST:
+            lora_png_name = lora_name.replace("safetensors","png").replace("\\","%")
+            # if os.path.exists(os.path.join(input_dir, lora_png_name)):
+            LORA_IMG_LIST.append(lora_png_name)
         return {
             "required": {
                 "model": ("MODEL",),
                 "clip": ("CLIP", ),
                 "lora_name": (LORA_LIST, ),
+                "select_lora_by_png": (LORA_IMG_LIST, {"image_upload": False,"tooltip":"When you select a PNG image associated with LoRA, the lora_name will be updated synchronously. These images should be placed in the 'input' folder."}),
                 "strength_model": ("FLOAT", {"default": 1.0, "min": -10.0, "max": 10.0, "step": 0.1}),
                 "strength_clip": ("FLOAT", {"default": 1.0, "min": -10.0, "max": 10.0, "step": 0.1}),
                 "save_trigger_local": ("BOOLEAN", {"default": True, "tooltip":"When 'trigger_word' is not empty, whether it is permanently set to the trigger word of this lora so that the trigger word is loaded automatically later"}),
-                # "tags_out": ("BOOLEAN", {"default": True}),
-                # "print_tags": ("BOOLEAN", {"default": False}),
-                # "bypass": ("BOOLEAN", {"default": False}),
-                # "force_fetch": ("BOOLEAN", {"default": False}),
-                # "int_field": ("INT", {
-                #     "default": 0, 
-                #     "min": 0, #Minimum value
-                #     "max": 4096, #Maximum value
-                #     "step": 64, #Slider's step
-                #     "display": "number", # Cosmetic only: display as "number" or "slider"
-                #     "lazy": True # Will only be evaluated if check_lazy_status requires it
-                # }),
-                # "float_field": ("FLOAT", {
-                #     "default": 1.0,
-                #     "min": 0.0,
-                #     "max": 10.0,
-                #     "step": 0.01,
-                #     "round": 0.001, #The value representing the precision to round to, will be set to the step value by default. Can be set to False to disable rounding.
-                #     "display": "number",
-                #     "lazy": True
-                # }),
-                # "print_to_screen": (["enable", "disable"],),
-                # "string_field": ("STRING", {
-                #     "multiline": False, #True if you want the field to look like the one on the ClipTextEncode node
-                #     "default": "Hello World!",
-                #     "lazy": True
-                # }),
             },
             "optional":{
                 "trigger_word": ("STRING", {
@@ -142,7 +75,8 @@ class LoRATriggerLocal:
             },
         }
 
-    RETURN_TYPES = ("MODEL", "CLIP", "STRING")
+    RETURN_TYPES = ("MODEL", "CLIP", "STRING", "STRING")
+    RETURN_NAMES = ("MODEL", "CLIP", "Prompt text", "PNG name")
     #RETURN_NAMES = ("image_output_name",)
 
     FUNCTION = "execute"
@@ -151,7 +85,7 @@ class LoRATriggerLocal:
 
     CATEGORY = "loaders"
 
-    def execute(self, model, clip, lora_name, strength_model, strength_clip,save_trigger_local,trigger_word,positive_prompt):
+    def execute(self, model, clip, lora_name,select_lora_by_png, strength_model, strength_clip,save_trigger_local,trigger_word,positive_prompt):
         trigger_word_result = trigger_word
         if trigger_word == "":
             lora_sha256_value = calculate_sha256(lora_name)
@@ -194,7 +128,8 @@ class LoRATriggerLocal:
             trigger_word_result = ""
         if positive_prompt != "":
             trigger_word_result = trigger_word_result + ", " + positive_prompt
-        return (model_lora, clip_lora, trigger_word_result,)
+        png_name = lora_name.replace("safetensors","png").replace("\\","%")
+        return (model_lora, clip_lora, trigger_word_result,select_lora_by_png,png_name,)
 
     """
         The node will always be re executed if any of the inputs change but
