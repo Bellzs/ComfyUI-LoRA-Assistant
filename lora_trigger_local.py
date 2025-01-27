@@ -75,8 +75,8 @@ class LoRATriggerLocal:
             },
         }
 
-    RETURN_TYPES = ("MODEL", "CLIP", "STRING", "STRING")
-    RETURN_NAMES = ("MODEL", "CLIP", "Prompt text", "PNG name")
+    RETURN_TYPES = ("MODEL", "CLIP", "STRING", "STRING", "STRING")
+    RETURN_NAMES = ("MODEL", "CLIP", "Full Prompt text", "Only Trigger text", "PNG name")
     #RETURN_NAMES = ("image_output_name",)
 
     FUNCTION = "execute"
@@ -126,10 +126,10 @@ class LoRATriggerLocal:
         model_lora, clip_lora = load_lora_for_models(model, clip, lora, strength_model, strength_clip)
         if trigger_word_result is None:
             trigger_word_result = ""
+        full_prompt_text = trigger_word_result
         if positive_prompt != "":
-            trigger_word_result = trigger_word_result + ", " + positive_prompt
-        png_name = lora_name.replace("safetensors","png").replace("\\","%")
-        return (model_lora, clip_lora, trigger_word_result,select_lora_by_png,png_name,)
+            full_prompt_text = trigger_word_result + ", " + positive_prompt
+        return (model_lora, clip_lora, full_prompt_text, trigger_word_result,select_lora_by_png,)
 
     """
         The node will always be re executed if any of the inputs change but
